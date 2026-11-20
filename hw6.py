@@ -11,7 +11,11 @@ class Name(Field):
 	pass
 
 class Phone(Field):
-    pass
+    def __init__(self, value):
+        phone_str = str(value)
+        if not (phone_str.isdigit() and len(phone_str) == 10):
+            raise ValueError("Номер телефону повинен складатися рівно з 10 цифр.")
+        super().__init__(phone_str)
 
 class Record:
     def __init__(self, name):
@@ -27,10 +31,10 @@ class Record:
             self.phones.remove(found_phone)
 
     def edit_phone(self, old_phone, new_phone):
-        for p in self.phones:
-            if p.value == old_phone:
-                p.value = new_phone
-                break
+        validated_phone = Phone(new_phone)  # Перевіряє new_phone на 10 цифр; при помилці кине ValueError
+        found_phone = self.find_phone(old_phone)
+        if found_phone:
+            found_phone.value = validated_phone.value
 
     def find_phone(self, phone):
         for p in self.phones:
